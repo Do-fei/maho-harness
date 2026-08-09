@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/engineering-harness/validation.schema.json",
+  "title": "Engineering Harness Validation Evidence",
+  "type": "object",
+  "required": ["schema_version", "generated_at", "project_root", "config_path", "overall", "checks", "protected_path_changes", "protected_snapshot", "raw_output_policy"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "generated_at": {"type": "string"},
+    "project_root": {"type": "string"},
+    "config_path": {"type": "string"},
+    "overall": {"enum": ["PASS", "FAIL", "INCONCLUSIVE"]},
+    "checks": {"type": "array"},
+    "protected_path_changes": {"type": "array", "items": {"type": "string"}},
+    "protected_snapshot": {
+      "type": "object",
+      "required": ["status", "limits"],
+      "properties": {
+        "status": {"enum": ["PASS", "FAIL", "INCONCLUSIVE"]},
+        "phase": {"enum": ["before", "after"]},
+        "error": {"type": "string"},
+        "limits": {
+          "type": "object",
+          "required": ["max_entries", "max_depth", "max_file_bytes", "max_total_bytes", "max_seconds", "chunk_bytes"],
+          "properties": {
+            "max_entries": {"type": "integer", "minimum": 1},
+            "max_depth": {"type": "integer", "minimum": 0},
+            "max_file_bytes": {"type": "integer", "minimum": 1},
+            "max_total_bytes": {"type": "integer", "minimum": 1},
+            "max_seconds": {"type": "number", "exclusiveMinimum": 0},
+            "chunk_bytes": {"type": "integer", "minimum": 1}
+          },
+          "additionalProperties": false
+        },
+        "stats": {"$ref": "#/$defs/snapshotStats"},
+        "before": {"$ref": "#/$defs/snapshotStats"},
+        "after": {"$ref": "#/$defs/snapshotStats"}
+      },
+      "additionalProperties": false
+    },
+    "output_path": {"type": "string"},
+    "raw_output_policy": {"type": "string"}
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "snapshotStats": {
+      "type": "object",
+      "required": ["entries", "files_hashed", "bytes_hashed", "max_depth_seen", "elapsed_seconds"],
+      "properties": {
+        "entries": {"type": "integer", "minimum": 0},
+        "files_hashed": {"type": "integer", "minimum": 0},
+        "bytes_hashed": {"type": "integer", "minimum": 0},
+        "max_depth_seen": {"type": "integer", "minimum": 0},
+        "elapsed_seconds": {"type": "number", "minimum": 0}
+      },
+      "additionalProperties": false
+    }
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/engineering-harness/stack-pack.schema.json",
+  "title": "Engineering Harness Stack Pack",
+  "type": "object",
+  "required": ["schema_version", "id", "name", "version", "detect_any", "detect_all", "candidate_checks", "runtime_probe_types", "references", "conflicts"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$"},
+    "name": {"type": "string", "minLength": 1},
+    "version": {"type": "integer", "minimum": 1},
+    "detect_any": {"type": "array", "items": {"type": "string"}},
+    "detect_all": {"type": "array", "items": {"type": "string"}},
+    "candidate_checks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "when_any", "command", "required", "timeout_seconds"],
+        "properties": {
+          "id": {"type": "string", "minLength": 1},
+          "when_any": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+          "command": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+          "cwd": {"type": "string", "default": "."},
+          "required": {"type": "boolean"},
+          "timeout_seconds": {"type": "integer", "minimum": 1, "maximum": 3600}
+        },
+        "additionalProperties": false
+      }
+    },
+    "runtime_probe_types": {"type": "array", "items": {"type": "string"}},
+    "references": {"type": "array", "items": {"type": "string"}},
+    "conflicts": {"type": "array", "items": {"type": "string"}}
+  },
+  "additionalProperties": false
+}

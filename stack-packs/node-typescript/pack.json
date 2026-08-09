@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "id": "node-typescript",
+  "name": "Node.js and TypeScript",
+  "version": 1,
+  "detect_any": ["package.json", "tsconfig.json"],
+  "detect_all": [],
+  "candidate_checks": [
+    {
+      "id": "test",
+      "when_any": ["package-script:test"],
+      "command": ["{package_manager}", "run", "test"],
+      "cwd": ".",
+      "required": true,
+      "timeout_seconds": 900
+    },
+    {
+      "id": "typecheck",
+      "when_any": ["package-script:typecheck"],
+      "command": ["{package_manager}", "run", "typecheck"],
+      "cwd": ".",
+      "required": false,
+      "timeout_seconds": 900
+    },
+    {
+      "id": "lint",
+      "when_any": ["package-script:lint"],
+      "command": ["{package_manager}", "run", "lint"],
+      "cwd": ".",
+      "required": false,
+      "timeout_seconds": 900
+    },
+    {
+      "id": "build",
+      "when_any": ["package-script:build"],
+      "command": ["{package_manager}", "run", "build"],
+      "cwd": ".",
+      "required": true,
+      "timeout_seconds": 900
+    }
+  ],
+  "runtime_probe_types": ["process", "http", "ui-when-declared"],
+  "references": ["https://nodejs.org/docs/latest/api/", "https://www.typescriptlang.org/docs/"],
+  "conflicts": []
+}

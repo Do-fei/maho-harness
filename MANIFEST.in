@@ -1,0 +1,12 @@
+include LICENSE LICENSE.zh-CN.md NOTICE NOTICE.zh-CN.md
+include README.md README.en.md README.zh-CN.md
+include THIRD_PARTY_NOTICES.md THIRD_PARTY_NOTICES.zh-CN.md
+include TRADEMARKS.md TRADEMARKS.zh-CN.md
+include SECURITY.md SECURITY.zh-CN.md
+include CONTRIBUTING.md CONTRIBUTING.zh-CN.md
+include CHANGELOG.md CHANGELOG.zh-CN.md
+recursive-include assets *.png
+recursive-include schemas *.json
+recursive-include skills *
+recursive-include stack-packs *
+recursive-include templates *

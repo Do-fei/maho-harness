@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/engineering-harness/discovery.schema.json",
+  "title": "Engineering Harness Discovery Evidence",
+  "type": "object",
+  "required": ["schema_version", "generated_at", "project_root", "stacks", "signals", "proposed_checks", "runtime_probe_types", "conflicts", "warnings"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "generated_at": {"type": "string"},
+    "project_root": {"type": "string"},
+    "file_count_scanned": {"type": "integer", "minimum": 0},
+    "scan_truncated": {"type": "boolean"},
+    "stacks": {"type": "array"},
+    "signals": {"type": "array"},
+    "proposed_checks": {"type": "array"},
+    "runtime_probe_types": {"type": "array", "items": {"type": "string"}},
+    "conflicts": {"type": "array"},
+    "warnings": {"type": "array", "items": {"type": "string"}}
+  },
+  "additionalProperties": false
+}

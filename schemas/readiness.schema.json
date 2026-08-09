@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/engineering-harness/readiness.schema.json",
+  "title": "Engineering Harness Readiness Evidence",
+  "type": "object",
+  "required": ["schema_version", "generated_at", "project_root", "overall", "findings"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "generated_at": {"type": "string"},
+    "project_root": {"type": "string"},
+    "overall": {"enum": ["READY", "NEEDS_ATTENTION"]},
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "status", "message"],
+        "properties": {
+          "id": {"type": "string"},
+          "status": {"enum": ["PASS", "WARN", "FAIL"]},
+          "message": {"type": "string"}
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

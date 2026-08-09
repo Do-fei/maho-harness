@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "id": "nextjs",
+  "name": "Next.js",
+  "version": 1,
+  "detect_any": ["dependency:next", "glob:next.config.*"],
+  "detect_all": ["package.json"],
+  "candidate_checks": [],
+  "runtime_probe_types": ["browser", "http", "console"],
+  "references": ["https://nextjs.org/docs"],
+  "conflicts": []
+}

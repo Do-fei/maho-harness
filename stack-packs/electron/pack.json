@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "id": "electron",
+  "name": "Electron",
+  "version": 1,
+  "detect_any": ["dependency:electron"],
+  "detect_all": ["package.json"],
+  "candidate_checks": [],
+  "runtime_probe_types": ["desktop-ui", "main-process-log", "packaged-launch"],
+  "references": ["https://www.electronjs.org/docs/latest/"],
+  "conflicts": []
+}

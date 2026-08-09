@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "id": "fastapi",
+  "name": "FastAPI",
+  "version": 1,
+  "detect_any": ["text:pyproject.toml:fastapi", "text:requirements.txt:fastapi"],
+  "detect_all": [],
+  "candidate_checks": [],
+  "runtime_probe_types": ["http", "openapi", "process"],
+  "references": ["https://fastapi.tiangolo.com/"],
+  "conflicts": []
+}

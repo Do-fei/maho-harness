@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "product": "MAHO",
+  "include_roots": [
+    "assets",
+    "harness",
+    "skills",
+    "stack-packs",
+    "templates",
+    "schemas",
+    "docs/en",
+    "docs/zh-CN"
+  ],
+  "include_files": [
+    "README.md",
+    "README.en.md",
+    "README.zh-CN.md",
+    "LICENSE",
+    "LICENSE.zh-CN.md",
+    "NOTICE",
+    "NOTICE.zh-CN.md",
+    "THIRD_PARTY_NOTICES.md",
+    "THIRD_PARTY_NOTICES.zh-CN.md",
+    "TRADEMARKS.md",
+    "TRADEMARKS.zh-CN.md",
+    "SECURITY.md",
+    "SECURITY.zh-CN.md",
+    "CONTRIBUTING.md",
+    "CONTRIBUTING.zh-CN.md",
+    "CHANGELOG.md",
+    "CHANGELOG.zh-CN.md",
+    "pyproject.toml",
+    "setup.py",
+    "MANIFEST.in",
+    "release/public-manifest.json",
+    "scripts/build_public_release.py",
+    "tests/test_agent_readiness.py",
+    "tests/test_harness_core.py",
+    "tests/test_maho_release.py",
+    "tests/test_public_release.py"
+  ],
+  "excluded_internal_roots": [
+    "reports",
+    "experiments",
+    "research",
+    "benchmarks",
+    "generalization"
+  ]
+}

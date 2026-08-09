@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "id": "python",
+  "name": "Python",
+  "version": 1,
+  "detect_any": ["pyproject.toml", "requirements.txt", "setup.py", "glob:tests/*.py", "glob:tests/**/*.py"],
+  "detect_all": [],
+  "candidate_checks": [
+    {
+      "id": "python-tests",
+      "when_any": ["glob:tests/*.py", "glob:tests/**/*.py"],
+      "command": ["python3", "-m", "unittest", "discover"],
+      "cwd": ".",
+      "required": true,
+      "timeout_seconds": 900
+    }
+  ],
+  "runtime_probe_types": ["process", "http-when-declared"],
+  "references": ["https://docs.python.org/3/"],
+  "conflicts": []
+}

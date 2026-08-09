@@ -1,0 +1,14 @@
+{
+  "excluded_internal_roots": [
+    "reports",
+    "experiments",
+    "research",
+    "benchmarks",
+    "generalization"
+  ],
+  "file_count": 104,
+  "mode": "public-candidate",
+  "output": ".",
+  "overwritten": 0,
+  "schema_version": 1
+}

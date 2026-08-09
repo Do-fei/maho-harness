@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "id": "react",
+  "name": "React",
+  "version": 1,
+  "detect_any": ["dependency:react"],
+  "detect_all": ["package.json"],
+  "candidate_checks": [],
+  "runtime_probe_types": ["browser", "component-ui", "accessibility"],
+  "references": ["https://react.dev/"],
+  "conflicts": []
+}

@@ -1,0 +1,292 @@
+import contextlib
+import io
+import json
+import re
+import tempfile
+import unittest
+from pathlib import Path
+
+from harness.adapters import (
+    AGENT_ADAPTERS,
+    EXPERIMENTAL_AGENT_IDS,
+    VERIFIED_AGENT_IDS,
+    install_agent_skills,
+    plan_agent_skills,
+)
+from harness.cli import main
+from harness.core import apply_bootstrap, load_project_config
+from harness.presentation import FULL_LOGO, render_init_receipt
+from harness import __version__
+
+
+class MahoReleaseTests(unittest.TestCase):
+    ROOT = Path(__file__).parents[1]
+
+    def test_first_release_has_exactly_ten_named_adapters(self):
+        self.assertEqual(
+            {
+                "claude-code",
+                "codex",
+                "cursor",
+                "factory-droid",
+                "gemini-cli",
+                "github-copilot",
+                "kilo-code",
+                "kimi-code",
+                "opencode",
+                "roo-code",
+            },
+            set(AGENT_ADAPTERS),
+        )
+
+    def test_first_release_has_seven_verified_and_three_experimental_adapters(self):
+        self.assertEqual(
+            {
+                "claude-code",
+                "codex",
+                "cursor",
+                "factory-droid",
+                "kilo-code",
+                "kimi-code",
+                "opencode",
+            },
+            set(VERIFIED_AGENT_IDS),
+        )
+        self.assertEqual(
+            {"gemini-cli", "github-copilot", "roo-code"},
+            set(EXPERIMENTAL_AGENT_IDS),
+        )
+
+    def test_agent_install_plan_is_dry_run_and_deduplicates_shared_root(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory).resolve()
+            result = plan_agent_skills(
+                root,
+                ["codex", "cursor", "kilo-code", "kimi-code"],
+                locale="en",
+            )
+
+            self.assertEqual("dry-run", result["mode"])
+            self.assertEqual(6, result["summary"]["would_create"])
+            self.assertEqual(0, result["summary"]["would_preserve"])
+            self.assertFalse((root / ".agents").exists())
+
+    def test_agent_install_creates_chinese_skills_and_preserves_collision(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory).resolve()
+            collision = root / ".agents/skills/acceptance-contract"
+            collision.mkdir(parents=True)
+            marker = collision / "SKILL.md"
+            marker.write_text("user-owned\n", encoding="utf-8")
+
+            result = install_agent_skills(
+                root,
+                ["codex", "factory-droid", "claude-code", "roo-code"],
+                locale="zh-CN",
+            )
+
+            self.assertEqual("apply", result["mode"])
+            self.assertEqual("user-owned\n", marker.read_text(encoding="utf-8"))
+            self.assertGreaterEqual(result["summary"]["created"], 20)
+            self.assertEqual(1, result["summary"]["preserved"])
+            for relative in (
+                ".agents/skills/completion-evidence/SKILL.md",
+                ".factory/skills/completion-evidence/SKILL.md",
+                ".claude/skills/completion-evidence/SKILL.md",
+                ".roo/skills/completion-evidence/SKILL.md",
+            ):
+                text = (root / relative).read_text(encoding="utf-8")
+                self.assertIn("完成证据", text)
+
+    def test_agent_install_warns_when_preserved_collision_is_not_a_skill(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory).resolve()
+            collision = root / ".agents/skills/completion-evidence"
+            collision.mkdir(parents=True)
+
+            result = install_agent_skills(root, ["codex"])
+
+            item = next(
+                entry
+                for entry in result["items"]
+                if entry["path"].endswith("completion-evidence")
+            )
+            self.assertEqual("preserved-existing", item["status"])
+            self.assertFalse(item["usable"])
+            self.assertEqual("WARN", result["summary"]["install_check"])
+            self.assertEqual(1, result["summary"]["unusable"])
+
+    def test_unknown_adapter_is_actionable_error(self):
+        with tempfile.TemporaryDirectory() as directory:
+            with self.assertRaisesRegex(ValueError, "unknown agent"):
+                plan_agent_skills(Path(directory).resolve(), ["imaginary-agent"])
+
+    def test_chinese_bootstrap_produces_loadable_localized_runtime_assets(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory).resolve()
+            (root / "requirements.txt").write_text("fastapi>=0.100\n", encoding="utf-8")
+
+            result = apply_bootstrap(root, install_agents=True, locale="zh-CN")
+            config = load_project_config(root)
+
+            self.assertEqual("apply", result["mode"])
+            self.assertIn("修改本仓库前", (root / "AGENTS.md").read_text(encoding="utf-8"))
+            self.assertIn("项目宪法", (root / ".harness/PROJECT_CONSTITUTION.md").read_text(encoding="utf-8"))
+            self.assertTrue((root / ".harness/stack-packs/fastapi/GUIDANCE.zh-CN.md").is_file())
+            self.assertEqual(
+                ".harness/stack-packs/fastapi/GUIDANCE.zh-CN.md",
+                next(item for item in config["selected_stack_packs"] if item["id"] == "fastapi")["guidance"],
+            )
+
+    def test_init_json_dry_run_does_not_write(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory).resolve()
+            with contextlib.redirect_stdout(io.StringIO()):
+                exit_code = main(
+                    [
+                        "--json",
+                        "--locale",
+                        "en",
+                        "init",
+                        str(root),
+                        "--agent",
+                        "codex",
+                    ]
+                )
+            self.assertEqual(0, exit_code)
+            self.assertFalse((root / ".harness").exists())
+            self.assertFalse((root / ".agents").exists())
+
+    def test_init_all_selects_only_verified_adapters(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory).resolve()
+            stdout = io.StringIO()
+            with contextlib.redirect_stdout(stdout):
+                exit_code = main(
+                    [
+                        "--json",
+                        "--locale",
+                        "en",
+                        "init",
+                        str(root),
+                        "--agent",
+                        "all",
+                    ]
+                )
+            result = json.loads(stdout.getvalue())
+            self.assertEqual(0, exit_code)
+            self.assertEqual(list(VERIFIED_AGENT_IDS), result["agents"])
+            self.assertEqual([], result["release_tiers"]["experimental"])
+
+    def test_explicit_experimental_adapter_is_labeled_in_receipt(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory).resolve()
+            stdout = io.StringIO()
+            with contextlib.redirect_stdout(stdout):
+                exit_code = main(
+                    [
+                        "--locale",
+                        "zh-CN",
+                        "init",
+                        str(root),
+                        "--agent",
+                        "gemini-cli",
+                    ]
+                )
+            self.assertEqual(0, exit_code)
+            self.assertIn("实验性", stdout.getvalue())
+            self.assertIn("尚未通过本版本的真实客户端验收", stdout.getvalue())
+
+    def test_init_receipt_has_real_sailboat_and_explicit_zero_overwrites(self):
+        receipt = render_init_receipt(
+            {
+                "mode": "dry-run",
+                "project_root": "/tmp/example",
+                "agents": ["codex"],
+                "locale": "en",
+                "bootstrap": {"would_create": [".harness/project.json"], "would_preserve": []},
+                "skills": {"summary": {"would_create": 6, "would_preserve": 0}},
+            },
+            locale="en",
+        )
+        self.assertIn(FULL_LOGO, receipt)
+        self.assertIn("Overwritten        0", receipt)
+        self.assertIn("No files were changed", receipt)
+
+    def test_public_release_manifest_is_machine_readable(self):
+        manifest = self.ROOT / "release/public-manifest.json"
+        data = json.loads(manifest.read_text(encoding="utf-8"))
+        self.assertEqual(1, data["schema_version"])
+        self.assertIn("assets", data["include_roots"])
+        self.assertNotIn("reports", data["include_roots"])
+        self.assertNotIn("experiments", data["include_roots"])
+
+    def test_readmes_use_the_project_mark_without_app_or_direction_labels(self):
+        banner = self.ROOT / "assets/brand/maho-readme-banner.png"
+        mark = self.ROOT / "assets/brand/maho-project-mark.png"
+        self.assertTrue(banner.is_file(), banner)
+        self.assertTrue(mark.is_file(), mark)
+
+        for name in ("README.md", "README.en.md", "README.zh-CN.md"):
+            text = (self.ROOT / name).read_text(encoding="utf-8")
+            self.assertIn("maho-readme-banner.png", text)
+            self.assertIn("Future Apparatus Laboratory", text)
+            self.assertNotIn("Nautical Laboratory", text)
+            self.assertNotIn("航海实验室", text)
+            self.assertNotIn("App Icon", text)
+            self.assertNotIn("应用图标", text)
+
+    def test_public_docs_freeze_verified_and_experimental_release_scope(self):
+        english_readme = (self.ROOT / "README.en.md").read_text(encoding="utf-8")
+        chinese_readme = (self.ROOT / "README.zh-CN.md").read_text(encoding="utf-8")
+        english_cli = (self.ROOT / "docs/en/CLI.md").read_text(encoding="utf-8")
+        chinese_cli = (self.ROOT / "docs/zh-CN/CLI.md").read_text(encoding="utf-8")
+
+        self.assertIn("all seven verified clients", english_readme)
+        self.assertIn("七个已验证客户端", chinese_readme)
+        self.assertIn("`--agent all` selects the seven verified clients only", english_cli)
+        self.assertIn("`--agent all` 只选择七个已验证客户端", chinese_cli)
+
+    def test_bilingual_public_surfaces_have_matching_pairs(self):
+        root_pairs = (
+            ("CHANGELOG.md", "CHANGELOG.zh-CN.md"),
+            ("CONTRIBUTING.md", "CONTRIBUTING.zh-CN.md"),
+            ("LICENSE", "LICENSE.zh-CN.md"),
+            ("NOTICE", "NOTICE.zh-CN.md"),
+            ("README.en.md", "README.zh-CN.md"),
+            ("SECURITY.md", "SECURITY.zh-CN.md"),
+            ("THIRD_PARTY_NOTICES.md", "THIRD_PARTY_NOTICES.zh-CN.md"),
+            ("TRADEMARKS.md", "TRADEMARKS.zh-CN.md"),
+        )
+        for english_name, chinese_name in root_pairs:
+            english = self.ROOT / english_name
+            chinese = self.ROOT / chinese_name
+            self.assertTrue(english.is_file(), english)
+            self.assertTrue(chinese.is_file(), chinese)
+
+        self.assertEqual(
+            {path.name for path in (self.ROOT / "docs/en").glob("*.md")},
+            {path.name for path in (self.ROOT / "docs/zh-CN").glob("*.md")},
+        )
+        self.assertEqual(
+            {path.name for path in (self.ROOT / "templates").glob("*.md")},
+            {path.name for path in (self.ROOT / "templates/zh-CN").glob("*.md")},
+        )
+        self.assertEqual(
+            {path.parent.name for path in (self.ROOT / "skills").glob("*/SKILL.md")},
+            {path.parent.name for path in (self.ROOT / "skills/zh-CN").glob("*/SKILL.md")},
+        )
+        for guidance in (self.ROOT / "stack-packs").glob("*/GUIDANCE.md"):
+            self.assertTrue(guidance.with_name("GUIDANCE.zh-CN.md").is_file(), guidance)
+
+    def test_package_and_runtime_versions_match(self):
+        metadata = (self.ROOT / "pyproject.toml").read_text(encoding="utf-8")
+        version_match = re.search(r'^version = "([^"]+)"$', metadata, re.MULTILINE)
+        self.assertIsNotNone(version_match)
+        self.assertEqual("0.1.0b1", __version__)
+        self.assertEqual(__version__, version_match.group(1))
+        self.assertIn("0.1.0-beta.1", (self.ROOT / "CHANGELOG.md").read_text(encoding="utf-8"))
+
+
+if __name__ == "__main__":
+    unittest.main()
