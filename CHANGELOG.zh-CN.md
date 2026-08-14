@@ -4,7 +4,7 @@ English: [`CHANGELOG.md`](CHANGELOG.md)
 
 所有重要变更记录在这里，日期使用 UTC。
 
-## 0.1.0-beta.1 — 尚未发布
+## 0.1.0-beta.1 — 2026-08-14
 
 ### 新增
 

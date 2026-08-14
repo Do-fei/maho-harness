@@ -4,7 +4,7 @@ Chinese: [`CHANGELOG.zh-CN.md`](CHANGELOG.zh-CN.md)
 
 All notable changes are documented here. Dates use UTC.
 
-## 0.1.0-beta.1 — Unreleased
+## 0.1.0-beta.1 — 2026-08-14
 
 ### Added
 

@@ -11,7 +11,7 @@
   <a href="README.en.md">English</a> · <a href="README.md">语言入口</a>
 </p>
 
-> **发布状态** — `0.1.0-beta.1` 是已通过本地验收的私测候选，尚未发布到 GitHub Releases 或 PyPI。详见[哪些已经完成，哪些尚未完成](#哪些已经完成哪些尚未完成)。
+> **发布** — `0.1.0-beta.1` 是 MAHO 的首个公开 Beta。签名产物以 GitHub Releases 为准；只有 PyPI 项目页列出本版本时，才视为 PyPI 可用。详见[哪些已经完成，哪些尚未完成](#哪些已经完成哪些尚未完成)。
 
 MAHO 是一个无运行时依赖的工程治理层，为编程智能体提供共享工程合同、安全仓库接入、可执行验证、有边界证据和独立验收语义。
 
@@ -36,19 +36,21 @@ MAHO 是一个无运行时依赖的工程治理层，为编程智能体提供共
 
 ### 1. 安装
 
-MAHO 需要 Python 3.10 或更高版本，且没有 Python 运行时依赖。公开包尚未上传，请先从当前源码安装：
-
-```bash
-python3 -m pip install -e .
-maho --version
-```
-
-通过 PyPI 发布门禁后，计划使用以下命令安装：
+MAHO 需要 Python 3.10 或更高版本，且没有 Python 运行时依赖。当 [PyPI 项目页](https://pypi.org/project/maho-harness/)列出 `0.1.0b1` 后，可使用：
 
 ```bash
 pipx install maho-harness
 # 或
 uv tool install maho-harness
+maho --version
+```
+
+在此之前，请从 [GitHub Releases](https://github.com/Do-fei/maho-harness/releases) 下载已签名 wheel 与 `SHA256SUMS`，完成校验后安装本地 wheel：
+
+```bash
+pipx install ./maho_harness-0.1.0b1-py3-none-any.whl
+# 或
+uv tool install ./maho_harness-0.1.0b1-py3-none-any.whl
 ```
 
 ### 2. 只读预览，不修改仓库
@@ -111,10 +113,10 @@ flowchart LR
 
 | 状态 | 范围 |
 |---|---|
-| **私测 Beta 已完成** | 核心 CLI；零覆盖 `init`；发现、就绪度、验证与上下文审计；双语 CLI/文档；七客户端适配器选择；白名单公开导出；wheel、sdist 与 pipx 安装检查。 |
+| **公开 Beta 已完成** | 核心 CLI；零覆盖 `init`；发现、就绪度、验证与上下文审计；双语 CLI/文档；七客户端适配器选择；白名单公开导出；wheel、sdist 与 pipx 安装检查。 |
 | **已验证客户端** | Codex、Cursor、Factory/Droid、Claude Code、Kilo Code、Kimi Code 和 OpenCode 均有有边界真实客户端证据及单独独立验收。 |
 | **实验性适配器** | Gemini CLI、Roo Code 和 GitHub Copilot 已完成文件系统适配器测试，但 `0.1.0-beta.1` 不包含其真实客户端测试与独立验收。 |
-| **公开可用前待完成** | GitHub 仓库与 Release、PyPI 上传、私密漏洞报告、版本签名和最终线上可见性检查。 |
+| **发布边界** | 以带签名与校验和的 GitHub Release 产物为准；PyPI 可用性、私密漏洞报告和匿名可见性必须在线验证，不能从本地检出状态推断。 |
 | **已知限制** | wheel/sdist 可以安装，但尚未证明能够跨不同构建环境逐字节复现。 |
 | **明确不作声明** | 智能体运行时、模型路由、安全沙箱，或所有第三方客户端具备完全一致的语义。 |
 
@@ -156,4 +158,4 @@ flowchart LR
 
 代码和文档使用 [Apache License 2.0](LICENSE)，中文参考见 [`LICENSE.zh-CN.md`](LICENSE.zh-CN.md)。MAHO 名称与帆船项目标记另由 [`TRADEMARKS.zh-CN.md`](TRADEMARKS.zh-CN.md) 说明。
 
-著作权署名为 MAHO contributors。**未来装置实验室（Future Apparatus Laboratory）**维护项目身份与标识。计划公开源码仓库为 [`Do-fei/maho-harness`](https://github.com/Do-fei/maho-harness)。
+著作权署名为 MAHO contributors。**未来装置实验室（Future Apparatus Laboratory）**维护项目身份与标识。公开源码仓库为 [`Do-fei/maho-harness`](https://github.com/Do-fei/maho-harness)。

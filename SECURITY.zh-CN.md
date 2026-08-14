@@ -4,11 +4,11 @@ English: [`SECURITY.md`](SECURITY.md)
 
 ## 支持版本
 
-只有最新发布的 Beta 或稳定版接收安全修复。目前尚无公开版本；`0.1.0-beta.1` 正在私测。
+只有最新发布的 Beta 或稳定版接收安全修复。`0.1.0-beta.1` 是当前受支持的 Beta 版本线。
 
 ## 报告漏洞
 
-未修复漏洞不要提交公开 Issue。请使用 [GitHub 私密漏洞报告](https://github.com/Do-fei/maho-harness/security/advisories/new)。公开发布前必须验证该私密通道可用；如果暂时不可用，绝不能把漏洞细节写入公开 Issue。
+未修复漏洞不要提交公开 Issue。请使用 [GitHub 私密漏洞报告](https://github.com/Do-fei/maho-harness/security/advisories/new)。如果该私密通道暂时不可用，绝不能把漏洞细节写入公开 Issue。
 
 报告应包含受影响版本、在 disposable repo 中的最小复现、影响和相关边界条件。不要提交真实凭据或生产隐私数据。
 

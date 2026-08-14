@@ -247,6 +247,27 @@ class MahoReleaseTests(unittest.TestCase):
         self.assertIn("`--agent all` selects the seven verified clients only", english_cli)
         self.assertIn("`--agent all` 只选择七个已验证客户端", chinese_cli)
 
+    def test_public_docs_are_ready_for_beta_publication(self):
+        english_readme = (self.ROOT / "README.en.md").read_text(encoding="utf-8")
+        chinese_readme = (self.ROOT / "README.zh-CN.md").read_text(encoding="utf-8")
+        english_changelog = (self.ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
+        chinese_changelog = (self.ROOT / "CHANGELOG.zh-CN.md").read_text(encoding="utf-8")
+        english_security = (self.ROOT / "SECURITY.md").read_text(encoding="utf-8")
+        chinese_security = (self.ROOT / "SECURITY.zh-CN.md").read_text(encoding="utf-8")
+        english_releasing = (self.ROOT / "docs/en/RELEASING.md").read_text(encoding="utf-8")
+        chinese_releasing = (self.ROOT / "docs/zh-CN/RELEASING.md").read_text(encoding="utf-8")
+
+        self.assertIn("first public Beta", english_readme)
+        self.assertIn("首个公开 Beta", chinese_readme)
+        self.assertNotIn("private-beta candidate", english_readme)
+        self.assertNotIn("私测候选", chinese_readme)
+        self.assertIn("0.1.0-beta.1 — 2026-08-14", english_changelog)
+        self.assertIn("0.1.0-beta.1 — 2026-08-14", chinese_changelog)
+        self.assertIn("current supported Beta line", english_security)
+        self.assertIn("当前受支持的 Beta 版本线", chinese_security)
+        self.assertIn("signed annotated tag", english_releasing)
+        self.assertIn("带签名的附注标签", chinese_releasing)
+
     def test_bilingual_public_surfaces_have_matching_pairs(self):
         root_pairs = (
             ("CHANGELOG.md", "CHANGELOG.zh-CN.md"),

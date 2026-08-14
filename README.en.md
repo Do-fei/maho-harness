@@ -11,7 +11,7 @@
   <a href="README.zh-CN.md">简体中文</a> · <a href="README.md">Language index</a>
 </p>
 
-> **Release status** — `0.1.0-beta.1` is an accepted local private-beta candidate. It has not been published to GitHub Releases or PyPI. See [What is complete—and what is not](#what-is-completeand-what-is-not).
+> **Release** — `0.1.0-beta.1` is MAHO's first public Beta. GitHub Releases is the authority for signed artifacts; treat PyPI as available only when its project page lists this version. See [What is complete—and what is not](#what-is-completeand-what-is-not).
 
 MAHO is a dependency-free governance layer that gives coding agents a shared engineering contract, safe repository setup, executable validation, bounded evidence, and independent acceptance semantics.
 
@@ -36,19 +36,21 @@ In practice, MAHO helps a coding agent:
 
 ### 1. Install
 
-MAHO requires Python 3.10 or later and has no runtime Python dependencies. The public package is not uploaded yet, so install from the checkout:
-
-```bash
-python3 -m pip install -e .
-maho --version
-```
-
-After the PyPI publication gate passes, the intended commands are:
+MAHO requires Python 3.10 or later and has no runtime Python dependencies. When the [PyPI project page](https://pypi.org/project/maho-harness/) lists `0.1.0b1`, install with:
 
 ```bash
 pipx install maho-harness
 # or
 uv tool install maho-harness
+maho --version
+```
+
+Until then, download the signed wheel and `SHA256SUMS` from [GitHub Releases](https://github.com/Do-fei/maho-harness/releases), verify it, and install the local wheel:
+
+```bash
+pipx install ./maho_harness-0.1.0b1-py3-none-any.whl
+# or
+uv tool install ./maho_harness-0.1.0b1-py3-none-any.whl
 ```
 
 ### 2. Preview—no repository changes
@@ -111,10 +113,10 @@ The universal core remains stack-neutral. Optional Stack Packs add conventions f
 
 | State | Scope |
 |---|---|
-| **Complete for the private Beta** | Core CLI; zero-overwrite `init`; discovery, readiness, validation, and context audit; bilingual CLI/docs; seven-client adapter selection; allowlisted public export; wheel, sdist, and pipx installation checks. |
+| **Complete for the public Beta** | Core CLI; zero-overwrite `init`; discovery, readiness, validation, and context audit; bilingual CLI/docs; seven-client adapter selection; allowlisted public export; wheel, sdist, and pipx installation checks. |
 | **Verified clients** | Codex, Cursor, Factory/Droid, Claude Code, Kilo Code, Kimi Code, and OpenCode have bounded real-client evidence plus separate independent acceptance. |
 | **Experimental adapters** | Gemini CLI, Roo Code, and GitHub Copilot have tested filesystem adapters, but no real-client or independent acceptance in `0.1.0-beta.1`. |
-| **Pending before public availability** | GitHub repository/release and PyPI upload; private vulnerability reporting; release signing; and final online visibility checks. |
+| **Release boundary** | Signed and checksummed GitHub Release artifacts are canonical. PyPI availability, private vulnerability reporting, and anonymous visibility are verified live rather than inferred from a checkout. |
 | **Known limitation** | Wheel/sdist builds are installable but not proven byte-for-byte reproducible across different build environments. |
 | **Explicitly not claimed** | An agent runtime, model routing, a security sandbox, or identical semantics in every third-party client. |
 
@@ -156,4 +158,4 @@ The detailed [compatibility matrix](docs/en/COMPATIBILITY.md) records client ver
 
 Code and documentation are licensed under the [Apache License 2.0](LICENSE). The MAHO name and sailboat project mark are governed separately by [TRADEMARKS.md](TRADEMARKS.md).
 
-Copyright is attributed to MAHO contributors. **Future Apparatus Laboratory** stewards the project identity and marks. The intended public source is [`Do-fei/maho-harness`](https://github.com/Do-fei/maho-harness).
+Copyright is attributed to MAHO contributors. **Future Apparatus Laboratory** stewards the project identity and marks. The public source is [`Do-fei/maho-harness`](https://github.com/Do-fei/maho-harness).

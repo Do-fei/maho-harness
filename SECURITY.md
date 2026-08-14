@@ -4,11 +4,11 @@ Chinese: [`SECURITY.zh-CN.md`](SECURITY.zh-CN.md)
 
 ## Supported versions
 
-Only the latest published beta or stable release receives security fixes. No public release exists yet; `0.1.0-beta.1` is under private testing.
+Only the latest published beta or stable release receives security fixes. `0.1.0-beta.1` is the current supported Beta line.
 
 ## Report a vulnerability
 
-Do not open a public issue for an unpatched vulnerability. Use [GitHub private vulnerability reporting](https://github.com/Do-fei/maho-harness/security/advisories/new). Availability of that private channel must be verified before publication; never place vulnerability details in a public issue if it is unavailable.
+Do not open a public issue for an unpatched vulnerability. Use [GitHub private vulnerability reporting](https://github.com/Do-fei/maho-harness/security/advisories/new). Never place vulnerability details in a public issue if that private channel is unavailable.
 
 Include the affected version, a minimal reproduction in a disposable repository, impact, and any relevant boundary conditions. Do not include real credentials or private production data.
 

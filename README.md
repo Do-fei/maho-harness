@@ -11,7 +11,7 @@
   <a href="README.en.md">English</a> · <a href="README.zh-CN.md">简体中文</a>
 </p>
 
-> **Release status / 发布状态** — `0.1.0-beta.1` is an accepted local private-beta candidate. It has not been published to GitHub Releases or PyPI. / `0.1.0-beta.1` 是已通过本地验收的私测候选，尚未发布到 GitHub Releases 或 PyPI。
+> **Release / 发布** — `0.1.0-beta.1` is MAHO's first public Beta. GitHub Releases is the authority for signed artifacts; treat PyPI as available only when its project page lists this version. / `0.1.0-beta.1` 是 MAHO 的首个公开 Beta。签名产物以 GitHub Releases 为准；只有 PyPI 项目页列出本版本时，才视为 PyPI 可用。
 
 ## What MAHO gives you / MAHO 提供什么
 
@@ -23,10 +23,12 @@ MAHO is a governance layer—not an agent runtime, model router, or security san
 
 ## Start safely / 安全开始
 
-Requires Python 3.10 or later. The public package is not uploaded yet, so install from the checkout. / 需要 Python 3.10 或更高版本。公开包尚未上传，请先从源码安装。
+Requires Python 3.10 or later. Install from PyPI only after its project page lists `0.1.0b1`; otherwise install the downloaded GitHub Release wheel. / 需要 Python 3.10 或更高版本。只有 PyPI 项目页列出 `0.1.0b1` 后才从 PyPI 安装；否则请安装从 GitHub Release 下载的 wheel。
 
 ```bash
-python3 -m pip install -e .
+pipx install maho-harness
+# or / 或
+pipx install ./maho_harness-0.1.0b1-py3-none-any.whl
 
 # Read-only preview / 只读预览
 maho --locale zh-CN init /path/to/project --agent codex
@@ -75,7 +77,7 @@ Selecting `--agent all` installs adapters for all seven verified clients. / 使�
 |---|---|
 | **Verified / 已验证** | Core CLI, zero-overwrite initialization, bilingual surfaces, public-export gates, package installation, and bounded real-client plus independent acceptance for Codex, Cursor, Factory/Droid, Claude Code, Kilo Code, Kimi Code, and OpenCode. / 核心 CLI、零覆盖初始化、双语界面、公开导出门禁、包安装，以及七个客户端的有边界真实测试和独立验收。 |
 | **Experimental / 实验性** | Gemini CLI, Roo Code, and GitHub Copilot have tested filesystem adapters only; real-client and independent acceptance are outside this Beta. / 三者仅完成文件系统适配器测试，真实客户端与独立验收不属于本次 Beta。 |
-| **Pending publication / 待发布** | GitHub repository/release and PyPI upload, private vulnerability reporting, release signing, and final online visibility checks. / GitHub 仓库与 Release、PyPI 上传、私密漏洞报告、版本签名和线上可见性检查。 |
+| **Release boundary / 发布边界** | Signed and checksummed GitHub Release artifacts are canonical. PyPI availability, private vulnerability reporting, and anonymous visibility are verified live rather than inferred from this checkout. / 以带签名与校验和的 GitHub Release 产物为准；PyPI 可用性、私密漏洞报告和匿名可见性必须在线验证，不能从本地检出状态推断。 |
 | **Not claimed / 不作声明** | Byte-for-byte reproducible artifacts, identical behavior across clients, or protection equivalent to a security sandbox. / 产物逐字节复现、所有客户端行为完全一致，或等同安全沙箱的保护能力。 |
 
 See the detailed [English README](README.en.md), [中文 README](README.zh-CN.md), and compatibility matrices ([EN](docs/en/COMPATIBILITY.md) · [中文](docs/zh-CN/COMPATIBILITY.md)).
