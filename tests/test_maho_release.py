@@ -268,6 +268,26 @@ class MahoReleaseTests(unittest.TestCase):
         self.assertIn("signed annotated tag", english_releasing)
         self.assertIn("带签名的附注标签", chinese_releasing)
 
+    def test_publication_order_respects_github_visibility_boundary(self):
+        english = (self.ROOT / "docs/en/RELEASING.md").read_text(encoding="utf-8")
+        chinese = (self.ROOT / "docs/zh-CN/RELEASING.md").read_text(encoding="utf-8")
+
+        self.assertIn("Keep the GitHub release as a Draft", english)
+        self.assertIn("保持 GitHub Release 为 Draft", chinese)
+        english_public = english.index("change repository visibility to public")
+        english_reporting = english.index("enable and verify private vulnerability reporting")
+        english_release = english.index("Publish and verify the GitHub prerelease")
+        self.assertLess(english.index("Keep the GitHub release as a Draft"), english_public)
+        self.assertLess(english_public, english_reporting)
+        self.assertLess(english_reporting, english_release)
+
+        chinese_public = chinese.index("将仓库转为公开")
+        chinese_reporting = chinese.index("启用并验证私密漏洞报告")
+        chinese_release = chinese.index("发布并验证 GitHub prerelease")
+        self.assertLess(chinese.index("保持 GitHub Release 为 Draft"), chinese_public)
+        self.assertLess(chinese_public, chinese_reporting)
+        self.assertLess(chinese_reporting, chinese_release)
+
     def test_bilingual_public_surfaces_have_matching_pairs(self):
         root_pairs = (
             ("CHANGELOG.md", "CHANGELOG.zh-CN.md"),

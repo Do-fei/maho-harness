@@ -27,10 +27,12 @@ The `0.1.0-beta.1` support contract contains seven verified clients. Gemini CLI,
 ## Publication order
 
 1. Push the sanitized candidate and signed annotated tag while the repository is still private.
-2. Publish and verify the GitHub prerelease while the repository is still private.
-3. Enable and verify private vulnerability reporting.
-4. Change repository visibility to public, then verify source, tag, release notes, and assets without relying on an authenticated session.
-5. Obtain separate owner approval for PyPI, upload once, and verify the live project page and install path.
+2. Keep the GitHub release as a Draft and verify its notes and assets with an authenticated session.
+3. Obtain explicit owner approval, then change repository visibility to public.
+4. Immediately enable and verify private vulnerability reporting, which GitHub.com makes available only for public repositories.
+5. Verify the source, signed tag, security policy, and vulnerability-reporting entry without relying on an authenticated session.
+6. Publish and verify the GitHub prerelease, then verify its release notes, assets, and checksums anonymously.
+7. Obtain separate owner approval for PyPI, upload once, and verify the live project page and install path.
 
 `SHA256SUMS` and GitHub asset digests provide integrity evidence, but they do not replace the signed tag and do not claim byte-for-byte reproducibility across build environments.
 
