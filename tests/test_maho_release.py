@@ -247,6 +247,45 @@ class MahoReleaseTests(unittest.TestCase):
         self.assertIn("`--agent all` selects the seven verified clients only", english_cli)
         self.assertIn("`--agent all` 只选择七个已验证客户端", chinese_cli)
 
+    def test_readmes_explain_governance_positioning_and_tradeoffs(self):
+        overview = (self.ROOT / "README.md").read_text(encoding="utf-8")
+        english = (self.ROOT / "README.en.md").read_text(encoding="utf-8")
+        chinese = (self.ROOT / "README.zh-CN.md").read_text(encoding="utf-8")
+
+        self.assertIn("Evidence-first engineering governance for coding agents", overview)
+        self.assertIn("面向编程智能体的证据优先工程治理", overview)
+        self.assertIn("How MAHO turns agent work into software engineering", overview)
+        self.assertIn("MAHO 如何实现工程闭环", overview)
+        self.assertIn("A concrete task", overview)
+        self.assertIn("一个具体任务", overview)
+        self.assertIn("Why teams keep MAHO in the repository", overview)
+        self.assertIn("为什么 MAHO 值得留在仓库里", overview)
+
+        for url in (
+            "https://github.github.com/spec-kit/",
+            "https://github.com/Fission-AI/OpenSpec",
+            "https://github.com/bmad-code-org/BMAD-METHOD",
+        ):
+            self.assertIn(url, english)
+            self.assertIn(url, chinese)
+
+        self.assertIn("Where MAHO is weaker", english)
+        self.assertIn("MAHO 当前的不足", chinese)
+        self.assertIn("It is not a sandbox", english)
+        self.assertIn("它不是安全沙箱", chinese)
+
+    def test_readme_relative_links_resolve(self):
+        for name in ("README.md", "README.en.md", "README.zh-CN.md"):
+            text = (self.ROOT / name).read_text(encoding="utf-8")
+            with self.subTest(name=name):
+                for target in re.findall(r"\[[^\]]+\]\(([^)]+)\)", text):
+                    target = target.strip().split()[0].strip("<>")
+                    if target.startswith(("http://", "https://", "#", "mailto:")):
+                        continue
+                    relative = target.split("#", 1)[0]
+                    if relative:
+                        self.assertTrue((self.ROOT / relative).exists(), target)
+
     def test_public_docs_are_ready_for_beta_publication(self):
         english_readme = (self.ROOT / "README.en.md").read_text(encoding="utf-8")
         chinese_readme = (self.ROOT / "README.zh-CN.md").read_text(encoding="utf-8")
