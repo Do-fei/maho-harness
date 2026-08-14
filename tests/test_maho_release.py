@@ -224,12 +224,15 @@ class MahoReleaseTests(unittest.TestCase):
     def test_readmes_use_the_project_mark_without_app_or_direction_labels(self):
         banner = self.ROOT / "assets/brand/maho-readme-banner.png"
         mark = self.ROOT / "assets/brand/maho-project-mark.png"
+        workflow = self.ROOT / "assets/brand/maho-codex-desktop-workflow.png"
         self.assertTrue(banner.is_file(), banner)
         self.assertTrue(mark.is_file(), mark)
+        self.assertTrue(workflow.is_file(), workflow)
 
         for name in ("README.md", "README.en.md", "README.zh-CN.md"):
             text = (self.ROOT / name).read_text(encoding="utf-8")
             self.assertIn("maho-readme-banner.png", text)
+            self.assertIn("maho-codex-desktop-workflow.png", text)
             self.assertIn("Future Apparatus Laboratory", text)
             self.assertNotIn("Nautical Laboratory", text)
             self.assertNotIn("航海实验室", text)
@@ -244,6 +247,19 @@ class MahoReleaseTests(unittest.TestCase):
         self.assertIn("原创二次元研究工程师站在帆船旁", chinese)
         self.assertIn("original artwork under `assets/brand/`", trademarks)
         self.assertIn("`assets/brand/` 下的原创插画", trademarks_zh)
+
+    def test_readmes_include_install_to_proof_codex_desktop_walkthrough(self):
+        for name in ("README.md", "README.en.md", "README.zh-CN.md"):
+            text = (self.ROOT / name).read_text(encoding="utf-8")
+            with self.subTest(name=name):
+                self.assertIn("brew install pipx", text)
+                self.assertIn("shasum -a 256 -c SHA256SUMS", text)
+                self.assertIn("maho_harness-0.1.0b1-py3-none-any.whl", text)
+                self.assertIn("init . --agent codex", text)
+                self.assertIn(".harness/PROJECT_CONSTITUTION.md", text)
+                self.assertIn(".agents/skills/", text)
+                self.assertIn("maho validate .", text)
+                self.assertIn("INCONCLUSIVE", text)
 
     def test_public_docs_freeze_verified_and_experimental_release_scope(self):
         english_readme = (self.ROOT / "README.en.md").read_text(encoding="utf-8")

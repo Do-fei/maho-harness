@@ -158,13 +158,32 @@ MAHO 不是第一个尝试给 AI 辅助开发建立秩序的项目。与它最�
 
 如果你的主要问题是“帮我发现和设计产品”，规划型框架可能更适合作为起点。如果问题是“多个智能体会修改这个仓库，我需要一个可信的完成标准”，那正是 MAHO 要解决的事情。
 
-## 快速开始
+## 从安装到证据回执：在 Codex Desktop 完成第一次任务
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/Do-fei/maho-harness/main/assets/brand/maho-codex-desktop-workflow.png" alt="MAHO Codex Desktop 完整上手流程：安装、初始化、打开项目、修改并验证，最后检查证据回执。" width="100%">
+</p>
+
+下面是一条从尚未安装 MAHO 开始、到取得可留存验证回执为止的 macOS 完整路径。MAHO 不是 Codex 插件，也不负责选择或转发模型。它在仓库里准备普通的工程文件；Codex Desktop 随后在同一个仓库中使用项目合同和 Skills 工作。
+
+### 1. 检查 Python，并安装 `pipx`
 
 MAHO 需要 Python 3.10 或更高版本，没有 Python 运行时依赖。
 
-### 1. 下载、校验并安装
+```bash
+python3 --version
+pipx --version
 
-从 [GitHub Release](https://github.com/Do-fei/maho-harness/releases/tag/v0.1.0-beta.1) 下载 wheel 和 `SHA256SUMS`，然后运行：
+# 仅当缺少 pipx 且电脑已经安装 Homebrew 时执行。
+brew install pipx
+pipx ensurepath
+```
+
+如果 `pipx ensurepath` 提示重启终端，请先重新打开终端再继续。也可以使用 `uv tool install` 代替 `pipx install`。
+
+### 2. 下载、校验并安装 MAHO
+
+从 [GitHub Release](https://github.com/Do-fei/maho-harness/releases/tag/v0.1.0-beta.1) 下载全部三项资产：wheel、源码归档和 `SHA256SUMS`。在存放这三个文件的目录中运行：
 
 ```bash
 shasum -a 256 -c SHA256SUMS
@@ -172,48 +191,72 @@ pipx install ./maho_harness-0.1.0b1-py3-none-any.whl
 maho --version
 ```
 
-也可以使用 `uv tool install` 代替 `pipx install`。当 [PyPI 项目页](https://pypi.org/project/maho-harness/)列出本版本后，才支持直接按包名安装；在此之前以 GitHub Release 为准。
+两项校验都应该显示 `OK`，`maho --version` 应输出 `0.1.0b1`。当 [PyPI 项目页](https://pypi.org/project/maho-harness/)列出本版本后，才支持直接按包名安装；在此之前以 GitHub Release 为准。
 
-### 2. 只读预览——MAHO 不会写入仓库
-
-```bash
-maho --locale zh-CN init /path/to/project --agent codex
-```
-
-检查目标路径、所选客户端、准备创建的文件、保留路径和明确的零覆盖结果。
-
-### 3. 应用审阅后的计划
+### 3. 先预览，再初始化仓库
 
 ```bash
-maho --locale zh-CN init /path/to/project --agent codex --apply --yes
+cd /path/to/your-project
+
+# 只读预览：检查计划，不写入文件。
+maho --locale zh-CN init . --agent codex
+
+# 应用已经审阅的计划；已有路径不会被覆盖。
+maho --locale zh-CN init . --agent codex --apply --yes
+
+maho discover .
+maho readiness .
 ```
 
-### 4. 检查项目并确认验证命令
+应用前先阅读预览回执。初始化后，打开 `AGENTS.md`、`.harness/PROJECT_CONSTITUTION.md` 和 `.harness/project.json`；补全项目专属决策，只把真正认可的检查从 `proposed_checks` 移入 `checks`。如果项目宪法尚未完成或检查还没有确认，`maho readiness .` 可能返回非零结果；这代表 MAHO 正在等待决策，并不是安装失败。
+
+### 4. 在 Codex Desktop 打开同一个目录
+
+在 Codex Desktop 中添加或打开 `/path/to/your-project`，然后新建一个任务。MAHO 本身不需要另装扩展、不需要额外的模型 API Key，也不需要 MAHO 托管账号；Codex 原有的正常登录仍然适用。第一次可以直接使用这段提示词：
+
+```text
+请把本次工作作为一个由 MAHO 管理的工程任务。
+
+修改前，先读取 AGENTS.md、.harness/PROJECT_CONSTITUTION.md，
+以及 .agents/skills/ 下与本任务相关的 Skills。
+
+任务：修复登录成功后偶发跳回登录页的问题。
+
+开始修改前，请总结 .harness/project.json 中的验收标准、受保护路径
+和已经确认的检查。不要自行发明检查，也不要悄悄降低标准。
+实现后，运行已经确认的检查和 `maho validate .`。
+
+只有留存证据足以支持时才能报告 PASS；确认的检查失败时报告 FAIL；
+缺少必要证据时报告 INCONCLUSIVE，并明确说明还缺少什么。
+```
+
+上面的任务只是示例；实际使用时替换任务目标，保留证据要求即可。
+
+### 5. 验证并查看回执
+
+这些命令可以由 Codex 在项目终端中执行，也可以由你亲自运行：
 
 ```bash
-maho discover /path/to/project
-maho readiness /path/to/project
+maho validate .
+maho context-audit .
 ```
 
-打开 `.harness/PROJECT_CONSTITUTION.md` 和 `.harness/project.json`，补全项目专属决策，只把真正认可的检查从 `proposed_checks` 移入 `checks`。
+`maho validate` 会输出 JSON 回执的精确 `output_path`，默认通常位于 `.harness/runs/<timestamp>/validation.json`。不要只相信对话摘要，请实际打开回执：
 
-### 5. 执行验证
+- `PASS`：已确认的检查在记录范围内全部通过；
+- `FAIL`：至少一项已确认检查失败，或者受保护路径发生变化；
+- `INCONCLUSIVE`：MAHO 没有取得足够证据，无法安全地下结论。
 
-```bash
-maho validate /path/to/project
-maho context-audit /path/to/project
-```
+对重要修改，再新建一个 Codex 任务——或者交给其他审查者——只检查精确候选、项目宪法和回执，不参与实现。这就是 **“先证明，再完成”** 背后的独立验收。
 
-### 6. 添加另一个智能体
+### 6. 以后添加其他智能体
 
 ```bash
 maho --locale zh-CN init . --agent cursor --apply --yes
 maho --locale zh-CN init . --agent all --apply --yes
 ```
 
-`--agent all` 只会安装全部七个已验证客户端。实验性适配器必须按名称显式选择，并会显示明确警告。
-
-自动化场景可以添加 `--json`，取得确定性的机器可读输出。
+`--agent all` 只会安装全部七个已验证客户端。实验性适配器必须按名称显式选择，并会显示明确警告。自动化场景可以添加 `--json`，取得确定性的机器可读输出。
 
 ## 当前 Beta 包含什么
 

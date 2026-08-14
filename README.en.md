@@ -158,13 +158,32 @@ MAHO can be used with these tools rather than instead of them. For example, Spec
 
 If your main problem is “help me discover and design the product,” a planning framework may be the better starting point. If the problem is “several agents touch this repository and I need a trustworthy definition of done,” MAHO is designed for that job.
 
-## Quick start
+## From install to proof with Codex Desktop
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/Do-fei/maho-harness/main/assets/brand/maho-codex-desktop-workflow.png" alt="MAHO Codex Desktop walkthrough: install, initialize, open the project, build and validate, then inspect an evidence receipt." width="100%">
+</p>
+
+This macOS walkthrough starts before MAHO is installed and ends with a durable validation receipt. MAHO is not a Codex plugin and does not choose or proxy a model. It prepares ordinary files inside the repository; Codex Desktop then works in that repository with the same project contract and Skills.
+
+### 1. Check Python and install `pipx`
 
 MAHO requires Python 3.10 or later and has no runtime Python dependencies.
 
-### 1. Download, verify, and install
+```bash
+python3 --version
+pipx --version
 
-Download the wheel and `SHA256SUMS` from the [GitHub Release](https://github.com/Do-fei/maho-harness/releases/tag/v0.1.0-beta.1), then run:
+# Run these only when pipx is missing and Homebrew is available.
+brew install pipx
+pipx ensurepath
+```
+
+If `pipx ensurepath` asks you to restart the terminal, do that before continuing. `uv tool install` can be used instead of `pipx install`.
+
+### 2. Download, verify, and install MAHO
+
+Download all three assets—the wheel, source archive, and `SHA256SUMS`—from the [GitHub Release](https://github.com/Do-fei/maho-harness/releases/tag/v0.1.0-beta.1). In the directory containing those files, run:
 
 ```bash
 shasum -a 256 -c SHA256SUMS
@@ -172,48 +191,74 @@ pipx install ./maho_harness-0.1.0b1-py3-none-any.whl
 maho --version
 ```
 
-`uv tool install` can be used instead of `pipx install`. When the [PyPI project page](https://pypi.org/project/maho-harness/) lists this version, installing by package name will also be supported. Until then, the GitHub Release is canonical.
+The two checksum entries should report `OK`, and `maho --version` should print `0.1.0b1`. When the [PyPI project page](https://pypi.org/project/maho-harness/) lists this version, installing by package name will also be supported. Until then, the GitHub Release is canonical.
 
-### 2. Preview—MAHO writes nothing
-
-```bash
-maho --locale en init /path/to/project --agent codex
-```
-
-Review the project path, selected client, proposed files, preserved paths, and the explicit zero-overwrite result.
-
-### 3. Apply the reviewed plan
+### 3. Preview, then initialize your repository
 
 ```bash
-maho --locale en init /path/to/project --agent codex --apply --yes
+cd /path/to/your-project
+
+# Dry run: inspect the plan; nothing is written.
+maho --locale en init . --agent codex
+
+# Apply the reviewed plan; existing paths are preserved.
+maho --locale en init . --agent codex --apply --yes
+
+maho discover .
+maho readiness .
 ```
 
-### 4. Inspect the project and approve its checks
+Review the dry-run receipt before applying it. After initialization, open `AGENTS.md`, `.harness/PROJECT_CONSTITUTION.md`, and `.harness/project.json`. Complete the project-specific decisions and move only the checks you accept from `proposed_checks` into `checks`. An incomplete Constitution or unapproved checks can make `maho readiness .` return a non-zero result; that is a request for a decision, not an installation failure.
+
+### 4. Open the same folder in Codex Desktop
+
+Add or open `/path/to/your-project` as a project in Codex Desktop and start a new task. MAHO itself requires no separate extension, additional model API key, or hosted MAHO account; your normal Codex sign-in still applies. A first task can use this prompt:
+
+```text
+Treat this as a MAHO-governed engineering task.
+
+Before editing, read AGENTS.md, .harness/PROJECT_CONSTITUTION.md,
+and the relevant Skills under .agents/skills/.
+
+Task: Fix the intermittent redirect back to the login page after sign-in.
+
+Before changing files, summarize the acceptance criteria, protected paths,
+and approved checks from .harness/project.json. Do not invent or silently
+weaken checks. After implementation, run the approved checks and
+`maho validate .`.
+
+Report PASS only when the retained evidence supports it. Report FAIL when
+an accepted check fails. Report INCONCLUSIVE when required proof is missing,
+and state exactly what is still needed.
+```
+
+The task is only an example; replace it with your real objective while keeping the evidence instructions.
+
+### 5. Validate and inspect the receipt
+
+Codex can run these commands in the project terminal, or you can run them yourself:
 
 ```bash
-maho discover /path/to/project
-maho readiness /path/to/project
+maho validate .
+maho context-audit .
 ```
 
-Open `.harness/PROJECT_CONSTITUTION.md` and `.harness/project.json`. Complete the project-specific decisions and move only the checks you accept from `proposed_checks` into `checks`.
+`maho validate` prints the exact `output_path` of its JSON receipt—normally under `.harness/runs/<timestamp>/validation.json`. Read the receipt rather than relying only on the chat summary:
 
-### 5. Validate
+- `PASS` means the accepted checks passed within the recorded scope;
+- `FAIL` means at least one accepted check failed or a protected path changed; and
+- `INCONCLUSIVE` means MAHO could not obtain enough proof to decide safely.
 
-```bash
-maho validate /path/to/project
-maho context-audit /path/to/project
-```
+For consequential work, start a fresh Codex task—or use another reviewer—to inspect the exact candidate, Constitution, and receipt without implementing the change. That is the independent-acceptance step behind **Proof before done**.
 
-### 6. Add another agent
+### 6. Add another agent later
 
 ```bash
 maho --locale en init . --agent cursor --apply --yes
 maho --locale en init . --agent all --apply --yes
 ```
 
-`--agent all` installs adapters for all seven verified clients only. Experimental adapters must be selected by name and display an explicit warning.
-
-For automation, add `--json` to receive deterministic machine-readable output.
+`--agent all` installs adapters for all seven verified clients only. Experimental adapters must be selected by name and display an explicit warning. For automation, add `--json` to receive deterministic machine-readable output.
 
 ## What ships in this Beta
 

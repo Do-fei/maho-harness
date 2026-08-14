@@ -162,32 +162,83 @@ The next person or agent does not need to trust a conversation summary. It can i
 
 MAHO does not optimize for a wall of green badges. It preserves `FAIL`, distinguishes missing proof as `INCONCLUSIVE`, and records the scope of a `PASS`. Failure becomes the next action, not an embarrassing artifact to hide. / MAHO 不追求一墙绿色徽章。它保留 `FAIL`，把缺少证据标为 `INCONCLUSIVE`，并写清 `PASS` 的适用范围。失败会成为下一步行动的依据，而不是需要隐藏的尴尬记录。
 
-## Start in five minutes / 五分钟开始
+## From install to proof with Codex Desktop / 从安装到证据回执：Codex Desktop 完整示例
 
-MAHO requires Python 3.10 or later and has no runtime Python dependencies. Download the wheel and `SHA256SUMS` from the [GitHub Release](https://github.com/Do-fei/maho-harness/releases/tag/v0.1.0-beta.1). / MAHO 需要 Python 3.10 或更高版本，没有 Python 运行时依赖。请从 [GitHub Release](https://github.com/Do-fei/maho-harness/releases/tag/v0.1.0-beta.1) 下载 wheel 和 `SHA256SUMS`。
+<p align="center">
+  <img src="https://raw.githubusercontent.com/Do-fei/maho-harness/main/assets/brand/maho-codex-desktop-workflow.png" alt="MAHO Codex Desktop walkthrough: install, initialize, open the project, build and validate, then inspect an evidence receipt. / MAHO Codex Desktop 完整上手流程：安装、初始化、打开项目、修改并验证，最后检查证据回执。" width="100%">
+</p>
+
+MAHO is not a Codex plugin and does not choose or proxy a model. It prepares the engineering contract and Skills inside the repository; Codex Desktop works in that same repository. / MAHO 不是 Codex 插件，也不负责选择或转发模型。它把工程合同和 Skills 放进仓库，Codex Desktop 随后在同一个仓库中工作。
+
+### 1. Prepare and install / 准备并安装
+
+On macOS, confirm Python 3.10+ and `pipx`. If `pipx` is missing and Homebrew is available, install it first. Download all three assets—the wheel, source archive, and `SHA256SUMS`—from the [GitHub Release](https://github.com/Do-fei/maho-harness/releases/tag/v0.1.0-beta.1). / 在 macOS 上先确认 Python 3.10+ 和 `pipx`。如果缺少 `pipx` 且已经安装 Homebrew，请先安装它。然后从 GitHub Release 下载全部三项资产：wheel、源码归档和 `SHA256SUMS`。
 
 ```bash
-# Verify and install / 校验并安装
+python3 --version
+pipx --version
+
+# Only when pipx is missing / 仅当缺少 pipx 时
+brew install pipx
+pipx ensurepath
+
+# Run in the directory containing all three Release assets
+# 在存放三项 Release 资产的目录中执行
 shasum -a 256 -c SHA256SUMS
 pipx install ./maho_harness-0.1.0b1-py3-none-any.whl
-
-# 1. Preview only: MAHO writes nothing / 只读预览：不会写入仓库
-maho --locale zh-CN init /path/to/project --agent codex
-
-# 2. Apply the reviewed plan; existing paths are preserved
-# 应用审阅后的计划；已有路径不会被覆盖
-maho --locale zh-CN init /path/to/project --agent codex --apply --yes
-
-# 3. Inspect readiness and proposed checks / 检查准备度与候选检查
-maho discover /path/to/project
-maho readiness /path/to/project
-
-# 4. Approve checks in .harness/project.json, then validate
-# 在 .harness/project.json 中确认检查，然后执行验证
-maho validate /path/to/project
+maho --version
 ```
 
-Use `--agent all` to install adapters for all seven verified clients. Add another client later without replacing the first one. / 使用 `--agent all` 可安装全部七个已验证客户端的适配器；以后也可以继续添加客户端，不会替换已有配置。
+Both checksum entries should report `OK`; the version should be `0.1.0b1`. / 两项校验都应显示 `OK`，版本应为 `0.1.0b1`。
+
+### 2. Preview and initialize / 预览并初始化
+
+```bash
+cd /path/to/your-project
+
+# Dry run: no writes / 只读预览：不写入文件
+maho --locale zh-CN init . --agent codex
+
+# Apply the reviewed plan; existing paths are preserved
+# 应用已经审阅的计划；已有路径不会被覆盖
+maho --locale zh-CN init . --agent codex --apply --yes
+
+maho discover .
+maho readiness .
+```
+
+Open `AGENTS.md`, `.harness/PROJECT_CONSTITUTION.md`, and `.harness/project.json`. Complete the project decisions and move only accepted checks from `proposed_checks` into `checks`. A non-zero readiness result can mean a decision is still missing; it is not necessarily an installation failure. / 打开上述三个工程文件，补全项目决策，只把真正认可的检查从 `proposed_checks` 移入 `checks`。准备度返回非零可能只是仍有决策缺失，并不一定代表安装失败。
+
+### 3. Open the project in Codex Desktop / 在 Codex Desktop 打开项目
+
+Add or open the same directory in Codex Desktop, start a new task, and use this prompt as a starting point. MAHO itself requires no separate extension, additional model API key, or hosted MAHO account; your normal Codex sign-in still applies. / 在 Codex Desktop 中添加或打开同一个目录，新建任务，并以这段提示词为起点。MAHO 本身不需要另装扩展、不需要额外的模型 API Key，也不需要 MAHO 托管账号；Codex 原有的正常登录仍然适用。
+
+```text
+请把本次工作作为一个由 MAHO 管理的工程任务。
+
+修改前，先读取 AGENTS.md、.harness/PROJECT_CONSTITUTION.md，
+以及 .agents/skills/ 下与本任务相关的 Skills。
+
+任务：修复登录成功后偶发跳回登录页的问题。
+
+开始修改前，请总结 .harness/project.json 中的验收标准、受保护路径
+和已经确认的检查。不要自行发明检查，也不要悄悄降低标准。
+实现后，运行已经确认的检查和 `maho validate .`。
+
+只有留存证据足以支持时才能报告 PASS；检查失败时报告 FAIL；
+缺少必要证据时报告 INCONCLUSIVE，并明确说明还缺少什么。
+```
+
+### 4. Read the evidence, not only the chat / 查看证据，不只看对话
+
+```bash
+maho validate .
+maho context-audit .
+```
+
+`maho validate` prints the exact `output_path` of its receipt, normally under `.harness/runs/<timestamp>/validation.json`. `PASS` is scoped proof, `FAIL` preserves a failed check or protected-path change, and `INCONCLUSIVE` means required proof is missing. For consequential work, give the exact candidate, Constitution, and receipt to a fresh reviewer. / `maho validate` 会输出回执的精确路径，默认通常位于 `.harness/runs/<timestamp>/validation.json`。`PASS` 是有边界的证明，`FAIL` 会保留失败检查或受保护路径变化，`INCONCLUSIVE` 表示缺少必要证据。重要任务应把精确候选、项目宪法和回执交给新的审查者。
+
+The full walkthrough is available in [English](README.en.md#from-install-to-proof-with-codex-desktop) and [简体中文](README.zh-CN.md#从安装到证据回执在-codex-desktop-完成第一次任务). / 完整教程见英文版和简体中文版。
 
 ## Client support / 支持的智能体
 
