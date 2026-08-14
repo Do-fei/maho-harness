@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/Do-fei/maho-harness/main/assets/brand/maho-readme-banner.png" alt="MAHO — Model-Agnostic Harness for Outcomes。先证明，再完成。" width="100%">
+  <img src="https://raw.githubusercontent.com/Do-fei/maho-harness/main/assets/brand/maho-readme-banner.png" alt="MAHO 横幅：原创二次元研究工程师站在帆船旁。Model-Agnostic Harness for Outcomes。先证明，再完成。" width="100%">
 </p>
 
 <p align="center">

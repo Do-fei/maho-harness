@@ -236,6 +236,15 @@ class MahoReleaseTests(unittest.TestCase):
             self.assertNotIn("App Icon", text)
             self.assertNotIn("应用图标", text)
 
+        english = (self.ROOT / "README.en.md").read_text(encoding="utf-8")
+        chinese = (self.ROOT / "README.zh-CN.md").read_text(encoding="utf-8")
+        trademarks = (self.ROOT / "TRADEMARKS.md").read_text(encoding="utf-8")
+        trademarks_zh = (self.ROOT / "TRADEMARKS.zh-CN.md").read_text(encoding="utf-8")
+        self.assertIn("original anime-style research engineer beside a sailboat", english)
+        self.assertIn("原创二次元研究工程师站在帆船旁", chinese)
+        self.assertIn("original artwork under `assets/brand/`", trademarks)
+        self.assertIn("`assets/brand/` 下的原创插画", trademarks_zh)
+
     def test_public_docs_freeze_verified_and_experimental_release_scope(self):
         english_readme = (self.ROOT / "README.en.md").read_text(encoding="utf-8")
         chinese_readme = (self.ROOT / "README.zh-CN.md").read_text(encoding="utf-8")
