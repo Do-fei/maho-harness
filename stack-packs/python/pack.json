@@ -9,7 +9,7 @@
     {
       "id": "python-tests",
       "when_any": ["glob:tests/*.py", "glob:tests/**/*.py"],
-      "command": ["python3", "-m", "unittest", "discover"],
+      "command": ["python3", "-m", "unittest", "discover", "-s", "tests"],
       "cwd": ".",
       "required": true,
       "timeout_seconds": 900

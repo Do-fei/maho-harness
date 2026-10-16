@@ -110,7 +110,7 @@ class HarnessCoreTests(unittest.TestCase):
         result = discover(self.root)
         self.assertEqual(["fastapi", "python"], [item["id"] for item in result["stacks"]])
         self.assertEqual(
-            ["python3", "-m", "unittest", "discover"],
+            ["python3", "-m", "unittest", "discover", "-s", "tests"],
             result["proposed_checks"][0]["command"],
         )
 

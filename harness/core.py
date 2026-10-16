@@ -1146,7 +1146,7 @@ def _render_constitution(
 
 ## Project
 
-- Name 名称：{root.name}
+- Name: {root.name}（名称）
 - Goal 目标来源：仓库 README 或任务验收合同
 - Stack 检测到的技术栈：{stack_names}
 

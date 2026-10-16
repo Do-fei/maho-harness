@@ -90,8 +90,15 @@ def _manifest_paths(manifest: dict, source: Path) -> list[Path]:
                     raise ReleaseError(
                         f"refusing public symlink: {path.relative_to(source)}"
                     )
-            directories[:] = sorted(directories)
+            # Skip bytecode caches: they are generated artifacts, not release
+            # content, and their embedded absolute paths trip the private
+            # pattern scan.
+            directories[:] = sorted(
+                item for item in directories if item != "__pycache__"
+            )
             for name in sorted(files):
+                if name.endswith((".pyc", ".pyo")):
+                    continue
                 path = current_path / name
                 if path.is_symlink():
                     raise ReleaseError(f"refusing public symlink: {path.relative_to(source)}")

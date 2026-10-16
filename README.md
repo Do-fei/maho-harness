@@ -107,7 +107,7 @@ Checks in `proposed_checks` are suggestions. Only entries deliberately moved int
   "checks": [
     {
       "id": "unit",
-      "command": ["python3", "-m", "unittest", "discover"],
+      "command": ["python3", "-m", "unittest", "discover", "-s", "tests"],
       "cwd": ".",
       "required": true,
       "timeout_seconds": 900

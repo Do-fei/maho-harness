@@ -10,12 +10,13 @@ Status: PROPOSED — replace every `TBD` before treating this as resolved.
 
 ## Supported commands
 
-- Setup:
-- Test:
-- Lint:
-- Typecheck:
-- Build:
-- Runtime/user-flow probe:
+- Setup: `TBD`
+- Test: `TBD`
+- Lint: `TBD`
+- Typecheck: `TBD`
+- Build: `TBD`
+- Runtime/user-flow probe: `TBD`
+- Accepted validation commands (moved here from proposed checks once a maintainer confirms them): `TBD`
 
 ## Protected paths
 
@@ -24,7 +25,7 @@ Status: PROPOSED — replace every `TBD` before treating this as resolved.
 
 ## Generated paths
 
-- `TBD`
+- Paths produced by validation runs and evidence receipts: `TBD`
 
 ## Stack guidance and runtime probes
 
